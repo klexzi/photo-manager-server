@@ -21,7 +21,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      venueId: {
+      VenueId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'Venues',

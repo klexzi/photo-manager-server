@@ -1,4 +1,6 @@
 'use strict';
+import bcrypt from 'bcryptjs';
+
 module.exports = (sequelize, DataTypes) => {
   const Admin = sequelize.define(
     'Admin',
@@ -23,6 +25,24 @@ module.exports = (sequelize, DataTypes) => {
     Admin.belongsTo(models.Venue);
   };
 
+  Admin.findByEmail = async email => {
+    let admin = await Admin.findOne({
+      where: { email },
+    });
+
+    if (!admin) {
+      admin = await Admin.findOne({
+        where: { email },
+      });
+    }
+
+    return admin;
+  };
+  Admin.beforeBulkCreate(async admins => {
+    admins = admins.map(async admin => {
+      admin.password = await admin.generatePasswordHash();
+    });
+  });
   Admin.beforeCreate(async admin => {
     admin.password = await admin.generatePasswordHash();
   });

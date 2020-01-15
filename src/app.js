@@ -54,6 +54,7 @@ const server = new ApolloServer({
     };
   },
   context: async ({ req, connection }) => {
+    console.log('req', req.headers['x-token']);
     if (connection) {
       return {
         models,

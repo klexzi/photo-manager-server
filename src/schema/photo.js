@@ -4,17 +4,18 @@ import { gql } from 'apollo-server-express';
 export default gql`
   extend type Query {
     photos(cursor: String, limit: Int): [Photo!]
-    photo(photoId: ID!): Photo
+    photo(photoId: Int!): Photo
   }
 
   extend type Mutation {
     addPhoto(
+      venueId: Int!
       imageUrl: String!
       caption: String
       category: Categories!
     ): Photo!
-    editCaption(photoId: ID!, caption: String!): Boolean!
-    deletePhoto(id: ID!): Boolean
+    editCaption(photoId: Int!, caption: String!): Photo!
+    deletePhoto(photoId: Int!): Boolean
   }
 
   enum Categories {
@@ -25,9 +26,10 @@ export default gql`
     Backup
   }
   type Photo {
-    id: ID!
+    id: Int!
     imageUrl: String!
     category: Categories!
-    caption: String!
+    caption: String
+    venueId: Int!
   }
 `;

@@ -23,7 +23,7 @@ module.exports = {
         'Social',
         'Backup'
       ),
-      venueId: {
+      VenueId: {
         type: Sequelize.INTEGER,
         references: {
           model: 'Venues',
