@@ -12,7 +12,6 @@
     "migrate": "node_modules/.bin/sequelize db:migrate",
     "seed": "node_modules/.bin/sequelize db:seed:all",
     "build": "rimraf rf dist/ && babel ./src/ -d dist/",
-    "prebuild": "npm run migrate && npm run seed",
     "dev": "nodemon --exec babel-node src/index.js",
     "test:run-server": "TEST_DATABASE=mytestdatabase npm start",
     "test:execute-test": "mocha --require @babel/register 'src/**/*.spec.js'",
@@ -29,8 +28,7 @@
     "axios": "^0.18.0",
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
-    "nodemon": "^1.18.7",
-    "morgan": "^1.9.1"
+    "nodemon": "^1.18.7"
   },
   "dependencies": {
     "@babel/cli": "^7.8.3",
@@ -47,6 +45,7 @@
     "graphql-iso-date": "^3.6.1",
     "graphql-resolvers": "^0.2.2",
     "jsonwebtoken": "^8.4.0",
+    "morgan": "^1.9.1",
     "pg": "^7.6.1",
     "rimraf": "^3.0.0",
     "sequelize": "^4.41.2",
