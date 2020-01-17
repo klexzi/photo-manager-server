@@ -11,7 +11,7 @@ import {
 
 import schema from './schema';
 import resolvers from './resolvers';
-import db from '../models';
+import db from './models';
 import loaders from './loaders';
 
 const { sequelize } = db;

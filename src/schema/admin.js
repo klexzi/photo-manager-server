@@ -7,6 +7,7 @@ export default gql`
 
   extend type Mutation {
     signIn(email: String!, password: String!): Token!
+    verifyToken(token: String!): Boolean!
   }
 
   type Token {

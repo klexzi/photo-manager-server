@@ -1,12 +1,25 @@
 import { combineResolvers } from 'graphql-resolvers';
 import { isAuthenticated, isVenueAdmin } from './authorization';
+import {
+  uploadToCloudinary,
+  deleteFileFromCloudinary,
+} from '../libs/utils';
+
 export default {
   Query: {
     photos: combineResolvers(
       isAuthenticated,
-      async (parent, { cursor, limit = 20 }, { models, me }) => {
+      async (
+        parent,
+        { cursor, limit = 20, filterValue = undefined },
+        { models, me }
+      ) => {
+        const where = { VenueId: me.VenueId };
+        if (filterValue) {
+          where.category = filterValue;
+        }
         const photos = await models.Photo.findAll({
-          where: { VenueId: me.VenueId },
+          where,
           order: [['createdAt', 'DESC']],
           limit: limit + 1,
         });
@@ -27,17 +40,29 @@ export default {
   Mutation: {
     addPhoto: combineResolvers(
       isVenueAdmin,
-      async (
-        parent,
-        { venueId, imageUrl, category, caption },
-        { models }
-      ) => {
-        return await models.Photo.create({
-          imageUrl,
-          caption,
-          category,
-          VenueId: venueId,
-        });
+      async (parent, args, { models }) => {
+        const { venueId, category, caption } = args;
+        const {
+          stream,
+          filename,
+          mimetype,
+          encoding,
+        } = await args.file;
+        return uploadToCloudinary(stream, filename)
+          .then(result => {
+            const imageUrl = result.url;
+            const publicId = result.public_id;
+            return models.Photo.create({
+              VenueId: venueId,
+              imageUrl,
+              category,
+              publicId,
+            });
+          })
+          .then(photo => photo)
+          .catch(error => {
+            console.log(error);
+          });
       }
     ),
     editCaption: combineResolvers(
@@ -59,15 +84,34 @@ export default {
         return Photo.dataValues;
       }
     ),
+    editCategory: combineResolvers(
+      isAuthenticated,
+      async (parent, { photoId, category }, { models, me }) => {
+        const [_, Photo] = await models.Photo.update(
+          {
+            category,
+          },
+          {
+            where: {
+              id: photoId,
+              VenueId: me.VenueId,
+            },
+            returning: true,
+            plain: true,
+          }
+        );
+        return Photo.dataValues;
+      }
+    ),
     deletePhoto: combineResolvers(
       isAuthenticated,
       async (parent, { photoId }, { models, me }) => {
-        return await models.Photo.destroy({
-          where: {
-            id: photoId,
-            VenueId: me.VenueId,
-          },
+        const photo = await models.Photo.findOne({
+          where: { id: photoId, VenueId: me.VenueId },
         });
+        await deleteFileFromCloudinary(photo.publicId);
+        await photo.destroy();
+        return true;
       }
     ),
   },

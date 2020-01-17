@@ -42,7 +42,15 @@ export default {
       if (!isValid) {
         throw new AuthenticationError('Invalid email and password.');
       }
-      return { token: createToken(user, secret, '30m') };
+      return { token: createToken(user, secret, '5d') };
+    },
+    verifyToken: async (parent, { token }, { secret }) => {
+      try {
+        await jwt.verify(token, secret);
+        return true;
+      } catch (error) {
+        return false;
+      }
     },
   },
 

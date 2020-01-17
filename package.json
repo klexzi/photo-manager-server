@@ -7,7 +7,12 @@
     "node": "10.11.0"
   },
   "scripts": {
-    "start": "nodemon --exec babel-node src/index.js",
+    "start": "node dist/index.js",
+    "migrate": "node_modules/.bin/sequelize db:migrate",
+    "seed": "node_modules/.bin/sequelize db:seed:all",
+    "build": "rimraf rf dist/ && babel ./src/ -d dist/",
+    "prebuild": "npm run migrate && npm run seed",
+    "dev": "nodemon --exec babel-node src/index.js",
     "test:run-server": "TEST_DATABASE=mytestdatabase npm start",
     "test:execute-test": "mocha --require @babel/register 'src/**/*.spec.js'",
     "test": "echo \"No test specified\" && exit 0"
@@ -27,9 +32,12 @@
     "morgan": "^1.9.1"
   },
   "dependencies": {
+    "@babel/cli": "^7.8.3",
     "apollo-server": "^2.2.3",
     "apollo-server-express": "^2.2.3",
+    "babel-node": "0.0.1-security",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.18.1",
     "cors": "^2.8.5",
     "dataloader": "^1.4.0",
     "dotenv": "^6.1.0",
@@ -39,6 +47,7 @@
     "graphql-resolvers": "^0.2.2",
     "jsonwebtoken": "^8.4.0",
     "pg": "^7.6.1",
+    "rimraf": "^3.0.0",
     "sequelize": "^4.41.2",
     "sequelize-cli": "^5.5.1",
     "uuid": "^3.3.2"

@@ -7,8 +7,6 @@ export const isAuthenticated = (parent, args, { me }) =>
 export const isVenueAdmin = combineResolvers(
   isAuthenticated,
   (parent, { venueId }, { models, me }) => {
-    console.log('venueId', venueId);
-    console.log('me.VenueId', me.VenueId);
     if (venueId !== me.VenueId) {
       throw new ForbiddenError('Not authorized to access resource.');
     }
